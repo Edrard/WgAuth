@@ -1,0 +1,59 @@
+{
+    "name": "edrard/wgauth",
+    "description": "Wargaming authentication flow and token lifecycle for PHP 8.5",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Edrard"
+        }
+    ],
+    "require": {
+        "php": "^8.5",
+        "ext-ctype": "*",
+        "ext-filter": "*",
+        "ext-session": "*",
+        "edrard/wgapi": "^2.0",
+        "guzzlehttp/guzzle": "^7.10"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^12.5",
+        "phpstan/phpstan": "^2.1",
+        "friendsofphp/php-cs-fixer": "^3.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "edrard\\WgAuth\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "edrard\\Tests\\WgAuth\\": "tests/"
+        }
+    },
+    "repositories": [
+        {
+            "url": "https://github.com/Edrard/WgApi.git",
+            "type": "vcs"
+        }
+    ],
+    "scripts": {
+        "test": "phpunit",
+        "analyse": "phpstan analyse --memory-limit=512M",
+        "format": "php-cs-fixer fix",
+        "format:check": "php-cs-fixer fix --dry-run --diff"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "homepage": "https://github.com/Edrard/WgAuth",
+    "support": {
+        "source": "https://github.com/Edrard/WgAuth",
+        "issues": "https://github.com/Edrard/WgAuth/issues"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-main": "1.0.x-dev"
+        }
+    }
+}
