@@ -8,6 +8,7 @@ use edrard\WgAuth\AuthException;
 use edrard\WgAuth\Contracts\AuthTransportInterface;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Psr7\Utils;
 use InvalidArgumentException;
 use JsonException;
 use SensitiveParameter;
@@ -29,27 +30,30 @@ final class GuzzleAuthTransport implements AuthTransportInterface
     {
         $parts = parse_url($url);
         if (!is_array($parts) || ($parts['scheme'] ?? '') !== 'https' || empty($parts['host'])
-            || isset($parts['user']) || isset($parts['pass']) || isset($parts['query']) || isset($parts['fragment'])) {
+            || isset($parts['user']) || isset($parts['pass']) || isset($parts['query']) || isset($parts['fragment'])
+            || preg_match('/[\x00-\x20\x7f\\\\]/', $url)) {
             throw new InvalidArgumentException('Authentication endpoint must be HTTPS without credentials or query.');
         }
         try {
             $response = $this->client->request('POST', $url, [
+                'query' => [], 'debug' => false,
                 'form_params' => $parameters,
                 'timeout' => $this->timeout, 'connect_timeout' => $this->connectTimeout,
                 'verify' => true, 'allow_redirects' => false, 'http_errors' => false,
                 'headers' => ['Accept' => 'application/json'],
             ]);
             $status = $response->getStatusCode();
-            $body = $response->getBody()->read(1048577);
+            $stream = $response->getBody();
+            if ($stream->isSeekable()) {
+                $stream->rewind();
+            }
+            $body = Utils::copyToString($stream);
         } catch (Throwable) {
             // Do not retain Guzzle exceptions: they contain requests and credentials.
             throw new AuthException('WG authentication transport failed.');
         }
         if ($status < 200 || $status >= 300) {
             throw new AuthException('WG authentication HTTP request failed.', httpStatus: $status);
-        }
-        if (strlen($body) > 1048576) {
-            throw new AuthException('WG authentication response is too large.');
         }
         try {
             $envelope = json_decode($body, true, 64, JSON_THROW_ON_ERROR);

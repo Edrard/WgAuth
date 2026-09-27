@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased — planned 1.0.1
+
+- Remove the previous 1 MiB authentication response cap and read the complete body without a package-defined size limit.
+- Clear inherited Guzzle query defaults for POST and disable transport debug output, preventing configured query credentials from appearing in authentication URLs.
+- Read short stream chunks correctly, reject ambiguous endpoint URLs, and declare the directly used PSR-7 dependency.
+- Add security regression coverage and PHP 8.5 CI; retain one-time browser state, token ownership checks and no automatic POST retry.
+
 ## 1.0.0 — 2026-09-27
 
 Initial PHP 8.5 release for World of Tanks authentication in EU, NA and ASIA.

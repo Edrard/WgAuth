@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9c6c335bfda135571af7199cb8411cf7",
+    "content-hash": "e20178e300c833e892a0cc251e0ba680",
     "packages": [
         {
             "name": "edrard/wgapi",

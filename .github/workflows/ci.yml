@@ -1,0 +1,29 @@
+name: PHP quality
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
+        with:
+          php-version: '8.5'
+          extensions: curl, ctype, filter, session, dom, mbstring, xml, xmlwriter, pdo_sqlite
+          tools: composer:v2
+          coverage: none
+      - run: composer install --no-interaction --prefer-dist
+      - run: composer validate --strict
+      - run: composer dump-autoload --optimize --strict-psr
+      - run: composer check-platform-reqs
+      - run: composer test
+      - run: composer analyse
+      - run: composer format:check
+      - run: composer audit --locked

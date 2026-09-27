@@ -48,7 +48,7 @@ final class GuzzleAuthTransportTest extends TestCase
         yield 'scalar data' => [200, '{"status":"ok","data":"raw secret"}'];
         yield 'missing status' => [200, '{"data":null}'];
         yield 'unknown status' => [200, '{"status":"unknown","data":null}'];
-        yield 'oversized body' => [200, str_repeat('s', 1048577)];
+        yield 'large invalid JSON' => [200, str_repeat('s', 1048577)];
         yield 'WG error' => [200, '{"status":"error","error":{"code":407,"message":"raw secret","value":"raw secret"}}'];
         yield 'malformed error' => [200, '{"status":"error","error":"raw secret"}'];
     }

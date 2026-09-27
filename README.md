@@ -6,6 +6,8 @@ Independent Wargaming World of Tanks authentication library for EU, NA and ASIA.
 
 Requires PHP 8.5, Composer 2, ctype, filter and session. Guzzle 7 (MIT) performs HTTPS POST requests; sibling WgApi (Edrard, MIT) provides canonical realms and application configuration. Development tools are PHPUnit, PHPStan and PHP CS Fixer.
 
+The current development version reads complete authentication responses without a package-defined byte limit. The POST transport explicitly clears injected Guzzle query defaults and disables debug output. Custom middleware/transports must preserve credential redaction. The directly used guzzlehttp/psr7 dependency (MIT) provides the stream-reading utilities. These changes are tracked under Unreleased in CHANGELOG.md.
+
 From this directory:
 
 ```sh
