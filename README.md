@@ -6,7 +6,7 @@ Independent Wargaming World of Tanks authentication library for EU, NA and ASIA.
 
 Requires PHP 8.5, Composer 2, ctype, filter and session. Guzzle 7 (MIT) performs HTTPS POST requests; sibling WgApi (Edrard, MIT) provides canonical realms and application configuration. Development tools are PHPUnit, PHPStan and PHP CS Fixer.
 
-The current development version reads complete authentication responses without a package-defined byte limit. The POST transport explicitly clears injected Guzzle query defaults and disables debug output. Custom middleware/transports must preserve credential redaction. The directly used guzzlehttp/psr7 dependency (MIT) provides the stream-reading utilities. These changes are tracked under Unreleased in CHANGELOG.md.
+Release 1.0.1 reads complete authentication responses without a package-defined byte limit. The POST transport explicitly clears injected Guzzle query defaults and disables debug output. Custom middleware/transports must preserve credential redaction. The directly used guzzlehttp/psr7 dependency (MIT) provides the stream-reading utilities. These protections are included in the stable release.
 
 From this directory:
 
@@ -19,7 +19,7 @@ composer validate --strict
 composer audit
 ```
 
-Release: v1.0.0. Composer name: edrard/wgauth; stable constraint: ^1.0; development alias: 1.0.x-dev. WgApi uses a stable ^2.0 constraint and its GitHub VCS repository.
+Release: v1.0.1. Composer name: edrard/wgauth; stable constraint: ^1.0.1; development alias: 1.0.x-dev. WgApi uses a stable ^2.0 constraint and its GitHub VCS repository.
 
 Until the packages are registered on Packagist, a consuming application's **root composer.json** must declare both repositories; dependency repositories are not inherited:
 
@@ -29,11 +29,11 @@ Until the packages are registered on Packagist, a consuming application's **root
         { "type": "vcs", "url": "https://github.com/Edrard/WgAuth.git" },
         { "type": "vcs", "url": "https://github.com/Edrard/WgApi.git" }
     ],
-    "require": { "php": "^8.5", "edrard/wgauth": "^1.0" }
+    "require": { "php": "^8.5", "edrard/wgauth": "^1.0.1" }
 }
 ```
 
-For local development, use root path repositories with explicit versions edrard/wgauth = 1.0.0 and edrard/wgapi = 2.0.0. Local symlinks do not provide a release deployment artifact.
+For local development, use root path repositories with explicit versions edrard/wgauth = 1.0.1 and edrard/wgapi = 2.0.0. Local symlinks do not provide a release deployment artifact.
 
 ## Configure
 

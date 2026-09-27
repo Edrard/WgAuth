@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased — planned 1.0.1
+## 1.0.1 — 2026-09-27
 
 - Remove the previous 1 MiB authentication response cap and read the complete body without a package-defined size limit.
 - Clear inherited Guzzle query defaults for POST and disable transport debug output, preventing configured query credentials from appearing in authentication URLs.
