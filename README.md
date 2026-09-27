@@ -6,7 +6,7 @@ Independent Wargaming World of Tanks authentication library for EU, NA and ASIA.
 
 Requires PHP 8.5, Composer 2, ctype, filter and session. Guzzle 7 (MIT) performs HTTPS POST requests; sibling WgApi (Edrard, MIT) provides canonical realms and application configuration. Development tools are PHPUnit, PHPStan and PHP CS Fixer.
 
-Release 1.0.1 reads complete authentication responses without a package-defined byte limit. The POST transport explicitly clears injected Guzzle query defaults and disables debug output. Custom middleware/transports must preserve credential redaction. The directly used guzzlehttp/psr7 dependency (MIT) provides the stream-reading utilities. These protections are included in the stable release.
+Release 1.0.2 reads complete authentication responses without a package-defined byte limit. The POST transport explicitly clears injected Guzzle query defaults and disables debug output. Custom middleware/transports must preserve credential redaction. The directly used guzzlehttp/psr7 dependency (MIT) provides the stream-reading utilities. These protections are included in the stable release.
 
 From this directory:
 
@@ -19,7 +19,7 @@ composer validate --strict
 composer audit
 ```
 
-Release: v1.0.1. Composer name: edrard/wgauth; stable constraint: ^1.0.1; development alias: 1.0.x-dev. WgApi uses a stable ^2.0 constraint and its GitHub VCS repository.
+Release: v1.0.2. Composer name: edrard/wgauth; stable constraint: ^1.0.2; development alias: 1.0.x-dev. WgApi uses a stable ^2.0 constraint and its GitHub VCS repository.
 
 Until the packages are registered on Packagist, a consuming application's **root composer.json** must declare both repositories; dependency repositories are not inherited:
 
@@ -29,11 +29,11 @@ Until the packages are registered on Packagist, a consuming application's **root
         { "type": "vcs", "url": "https://github.com/Edrard/WgAuth.git" },
         { "type": "vcs", "url": "https://github.com/Edrard/WgApi.git" }
     ],
-    "require": { "php": "^8.5", "edrard/wgauth": "^1.0.1" }
+    "require": { "php": "^8.5", "edrard/wgauth": "^1.0.2" }
 }
 ```
 
-For local development, use root path repositories with explicit versions edrard/wgauth = 1.0.1 and edrard/wgapi = 2.0.0. Local symlinks do not provide a release deployment artifact.
+For local development, use root path repositories with explicit versions edrard/wgauth = 1.0.2 and edrard/wgapi = 2.0.0. Local symlinks do not provide a release deployment artifact.
 
 ## Configure
 
@@ -162,3 +162,7 @@ On 2026-09-26, PHP 8.5.11 in WSL: local tests cover successful ownership verific
 Source: [Edrard/WgAuth](https://github.com/Edrard/WgAuth). New implementation for Edrard; MIT, see LICENSE. Intended consumer: the future Laravel application and other explicitly integrated PHP applications. No application integration or deployment has been performed.
 
 Official references: [login](https://developers.wargaming.net/reference/all/wot/auth/login/), [prolongate](https://developers.wargaming.net/reference/all/wot/auth/prolongate/), [logout](https://developers.wargaming.net/reference/all/wot/auth/logout/), [account/info](https://developers.wargaming.net/reference/all/wot/account/info/).
+
+Dependency updates: run `composer update "edrard/*" --with-all-dependencies --prefer-stable` in the consuming application to upgrade the WG complex to the latest versions allowed by its constraints. Caret constraints allow compatible upgrades; `composer install` preserves the lock file. Dependency repositories must be declared in the application root.
+
+Token arguments are marked SensitiveParameter in internal expiry validation as well as public operations, so exception argument traces redact them even when zend.exception_ignore_args=0. Applications must also redact their own request logs and diagnostic context.

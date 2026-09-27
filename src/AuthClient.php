@@ -139,7 +139,7 @@ final class AuthClient
         return ($this->clock)() + $lifetime;
     }
 
-    private function assertUnexpired(AccessToken $token): void
+    private function assertUnexpired(#[SensitiveParameter] AccessToken $token): void
     {
         if ($token->expiresAt <= ($this->clock)()) {
             throw new AuthException('WG access token has expired.');

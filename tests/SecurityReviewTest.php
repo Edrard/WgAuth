@@ -14,6 +14,30 @@ use PHPUnit\Framework\TestCase;
 
 final class SecurityReviewTest extends TestCase
 {
+    public function testExpiredTokenCannotLeakThroughInternalValidationTrace(): void
+    {
+        $previous = ini_set('zend.exception_ignore_args', '0');
+        try {
+            foreach (['verifyIdentity', 'prolongate'] as $method) {
+                $transport = new RecordingTransport();
+                $client = new \edrard\WgAuth\AuthClient('fixture', $transport, static fn (): int => 2000);
+                $token = new \edrard\WgAuth\AccessToken(\edrard\WgApi\Realm::EU, 42, 'synthetic-trace-secret', 1000);
+                try {
+                    $client->$method($token);
+                    self::fail('Expired token accepted.');
+                } catch (\edrard\WgAuth\AuthException $exception) {
+                    $frames = array_values(array_filter($exception->getTrace(), static fn (array $frame): bool => $frame['function'] === 'assertUnexpired'));
+                    self::assertCount(1, $frames);
+                    self::assertInstanceOf(\SensitiveParameterValue::class, $frames[0]['args'][0]);
+                    self::assertStringNotContainsString('synthetic-trace-secret', var_export($exception->getTrace(), true));
+                    self::assertSame([], $transport->requests);
+                }
+            }
+        } finally {
+            ini_set('zend.exception_ignore_args', $previous);
+        }
+    }
+
     public function testDefaultQueryCannotLeak(): void
     {
         $history = [];

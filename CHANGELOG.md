@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.2 - 2026-09-28
+
+- Protect expired AccessToken arguments in internal validation stack traces with SensitiveParameter.
+- Add regressions with exception arguments enabled for identity verification and renewal.
+- Refresh all dependencies to the latest compatible stable versions.
+
 ## 1.0.1 — 2026-09-27
 
 - Remove the previous 1 MiB authentication response cap and read the complete body without a package-defined size limit.
