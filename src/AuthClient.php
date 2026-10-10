@@ -9,7 +9,10 @@ use edrard\WgApi\ApiConfiguration;
 use edrard\WgApi\Realm;
 use edrard\WgAuth\Contracts\AuthTransportInterface;
 use edrard\WgAuth\Http\GuzzleAuthTransport;
+use edrard\WgAuth\Internal\BestEffortLogger;
 use InvalidArgumentException;
+use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 use SensitiveParameter;
 
 final class AuthClient
@@ -18,17 +21,19 @@ final class AuthClient
     private AuthTransportInterface $transport;
     /** @var Closure(): int */
     private Closure $clock;
+    private readonly BestEffortLogger $logger;
 
     /**
      * A single ID is applied explicitly to EU, NA and ASIA.
      * @param string|array<string, string> $applicationIds
      * @param (callable(): int)|null $clock
      */
-    public function __construct(#[SensitiveParameter] string|array $applicationIds, ?AuthTransportInterface $transport = null, ?callable $clock = null)
+    public function __construct(#[SensitiveParameter] string|array $applicationIds, ?AuthTransportInterface $transport = null, ?callable $clock = null, ?LoggerInterface $logger = null)
     {
         $this->configuration = new ApiConfiguration(is_string($applicationIds) ? array_fill_keys(['eu', 'na', 'asia'], $applicationIds) : $applicationIds);
-        $this->transport = $transport ?? new GuzzleAuthTransport();
+        $this->transport = $transport ?? new GuzzleAuthTransport(logger: $logger);
         $this->clock = $clock === null ? time(...) : Closure::fromCallable($clock);
+        $this->logger = new BestEffortLogger($logger);
     }
 
     public function loginLocation(Realm $realm, string $redirectUri, int $tokenLifetime = 3600): string
@@ -46,6 +51,7 @@ final class AuthClient
             || isset($parts['user']) || isset($parts['pass']) || (isset($parts['port']) && $parts['port'] !== 443)
             || isset($parts['fragment'])
             || preg_match('/[\x00-\x20\x7f\\\\]/', $location)) {
+            $this->logger->log(LogLevel::WARNING, 'WG login location rejected for {realm}.', ['realm' => $realm->value]);
             throw new AuthException('Invalid WG authentication location.');
         }
         return $location;
@@ -63,6 +69,7 @@ final class AuthClient
         if (!is_array($account) || ($account['account_id'] ?? null) !== $token->accountId
             || !is_array($account['private'] ?? null) || !is_bool($account['private']['is_premium'] ?? null)
             || !is_string($account['nickname'] ?? null) || $account['nickname'] === '') {
+            $this->logger->log(LogLevel::WARNING, 'WG token ownership verification rejected for {realm}.', ['realm' => $token->realm->value]);
             throw new AuthException('WG token ownership could not be verified.');
         }
         return new Identity($token->realm, $token->accountId, $account['nickname']);
@@ -76,14 +83,17 @@ final class AuthClient
         ]);
         $renewed = $this->tokenFromData($token->realm, $data ?? []);
         if ($renewed->accountId !== $token->accountId) {
+            $this->logger->log(LogLevel::WARNING, 'WG renewal owner mismatch for {realm}.', ['realm' => $token->realm->value]);
             throw new AuthException('WG returned a different token owner.');
         }
+        $this->logger->log(LogLevel::DEBUG, 'WG token renewed for {realm}.', ['realm' => $token->realm->value]);
         return $renewed;
     }
 
     public function logout(#[SensitiveParameter] AccessToken $token): void
     {
         $this->post($token->realm, 'auth/logout', ['access_token' => $token->value()]);
+        $this->logger->log(LogLevel::DEBUG, 'WG token revoked for {realm}.', ['realm' => $token->realm->value]);
     }
 
     /** @param array<array-key, mixed> $data */

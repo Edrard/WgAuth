@@ -7,18 +7,23 @@ namespace edrard\WgAuth;
 use Closure;
 use edrard\WgApi\Realm;
 use edrard\WgAuth\Contracts\StateStoreInterface;
+use edrard\WgAuth\Internal\BestEffortLogger;
 use InvalidArgumentException;
+use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 use SensitiveParameter;
 
 final class WgAuth
 {
     /** @var Closure(): int */
     private Closure $clock;
+    private readonly BestEffortLogger $logger;
 
     /** @param (callable(): int)|null $clock */
-    public function __construct(private AuthClient $client, private StateStoreInterface $states, ?callable $clock = null)
+    public function __construct(private AuthClient $client, private StateStoreInterface $states, ?callable $clock = null, ?LoggerInterface $logger = null)
     {
         $this->clock = $clock === null ? time(...) : Closure::fromCallable($clock);
+        $this->logger = new BestEffortLogger($logger);
     }
 
     /** Callback URI must come from application configuration, never request input. */
@@ -48,18 +53,22 @@ final class WgAuth
     {
         $state = $query['state'] ?? null;
         if (!is_string($state) || !preg_match('/^[a-f0-9]{64}$/D', $state)) {
+            $this->logger->log(LogLevel::DEBUG, 'WG login state rejected.');
             throw new AuthException('Invalid login state.');
         }
         // Consumption precedes verification, including cancelled and malformed callbacks.
         $attempt = $this->states->consume($state);
         if ($attempt === null || !hash_equals($attempt->state, $state) || $attempt->expiresAt <= ($this->clock)()) {
+            $this->logger->log(LogLevel::DEBUG, 'WG login state rejected.');
             throw new AuthException('Invalid or expired login state.');
         }
         if (($query['status'] ?? null) !== 'ok') {
+            $this->logger->log(LogLevel::DEBUG, 'WG login cancelled or rejected for {realm}.', ['realm' => $attempt->realm->value]);
             throw new AuthException('WG login was cancelled or rejected.', AuthClient::positiveInteger($query['code'] ?? null));
         }
         $token = $this->client->tokenFromData($attempt->realm, $query);
         $identity = $this->client->verifyIdentity($token);
+        $this->logger->log(LogLevel::DEBUG, 'WG login completed for {realm}.', ['realm' => $attempt->realm->value]);
         return new AuthenticatedAccount($identity, $token);
     }
 }

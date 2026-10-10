@@ -2,6 +2,8 @@
 
 Independent Wargaming World of Tanks authentication library for EU, NA and ASIA. It implements browser login, session-bound one-time state, server-side token ownership verification, token renewal and revocation. It does not create application users, verify email, issue application sessions or implement your application's OAuth server.
 
+Optional PSR-3 logging provides sparse, credential-free diagnostics. The library works without a supplied logger, and logger failures do not affect authentication.
+
 ## Install and check
 
 Requires PHP 8.5, Composer 2, ctype, filter and session. Guzzle 7 (MIT) performs HTTPS POST requests; sibling WgApi (Edrard, MIT) provides canonical realms and application configuration. Development tools are PHPUnit, PHPStan and PHP CS Fixer.
@@ -129,6 +131,33 @@ unset($token, $renewed);
 ```
 
 prolongate() validates expiration and requires the returned account ID to match the original owner. Renewal/revocation use form-encoded POST bodies. There are no automatic retries or background renewal: a timeout on a mutation can have an unknown outcome, so the application decides recovery. WG revocation does not end the application's own login session, and logging out of your application does not automatically revoke WG tokens.
+
+## Optional PSR-3 logging
+
+This feature is available in the current development source and is listed under Unreleased in [CHANGELOG.md](CHANGELOG.md). The published v1.0.2 release does not include it.
+
+Logging is disabled by default through `Psr\Log\NullLogger`. The package directly depends on `psr/log` 3 (PHP-FIG, MIT); no logging backend is installed or configured. Existing constructor calls still work unchanged. Inject any consumer-provided `Psr\Log\LoggerInterface` using the optional trailing `logger` argument:
+
+```php
+// $logger is a PSR-3 logger configured by your application.
+$client = new AuthClient($applicationId, logger: $logger);
+$auth = new WgAuth($client, new PhpSessionStateStore(), logger: $logger);
+```
+
+`AuthClient` passes its logger to the default `GuzzleAuthTransport`. With a custom transport, configure its logging separately; for example `new GuzzleAuthTransport($httpClient, logger: $logger)`. `WgAuth` logs its own flow events, so supply the logger to both objects when those events are wanted.
+
+Records are intentionally sparse:
+
+- `debug`: completed login, renewed/revoked token, rejected state, cancelled/rejected login, provider rejection. Routine login URL creation and successful identity checks produce no records.
+- `warning`: transport/HTTP failures, malformed provider responses, unsafe login locations, failed token ownership verification and renewal owner mismatch.
+
+Use the application's normal threshold (for example `warning`) to omit routine events. Each logged failure is recorded only at the layer that detects it. Invalid caller arguments, token parsing/expiration and failures from custom transports/state stores still use their existing exceptions without extra log records. No retries, payload dumps, per-request start/end records or log files are added.
+
+Messages use placeholders with a small allowlist of context: realm or numeric HTTP status. Tokens, application IDs, state, URLs, request/response bodies, account IDs and nicknames are never included. Raw exceptions are deliberately omitted: their messages, previous exceptions and traces can contain credentials, especially from custom transports and Guzzle middleware. Applications must sanitize any exceptions they log themselves.
+
+Delivery is best-effort: a focused internal boundary catches `Throwable` only from the logger call and discards that record. A failed logger cannot change successful results, replace library exceptions or restore consumed state. No retry or recursive logging occurs. PSR-3 calls are synchronous; a consumer needing non-blocking delivery must provide a logger that queues records itself.
+
+Ukrainian documentation: [docs/uk/README.md](docs/uk/README.md).
 
 ## Runnable examples
 

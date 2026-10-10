@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Add optional PSR-3 constructor injection to AuthClient, WgAuth and GuzzleAuthTransport, with NullLogger fallback and best-effort delivery that isolates logger failures.
+- Keep records sparse and credential-free; routine events use debug and operational/security anomalies use warning, without logging failures again at higher layers.
+- Declare psr/log 3 directly without upgrading installed dependency versions; document logging and add Ukrainian usage documentation.
+
 ## 1.0.2 - 2026-09-28
 
 - Protect expired AccessToken arguments in internal validation stack traces with SensitiveParameter.
