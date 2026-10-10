@@ -21,7 +21,7 @@ composer validate --strict
 composer audit
 ```
 
-Release: v1.0.2. Composer name: edrard/wgauth; stable constraint: ^1.0.2; development alias: 1.0.x-dev. WgApi uses a stable ^2.0 constraint and its GitHub VCS repository.
+Release: v1.0.3. Composer name: edrard/wgauth; stable constraint: ^1.0.3; development alias: 1.0.x-dev. WgApi uses a stable ^2.0 constraint and its GitHub VCS repository.
 
 Until the packages are registered on Packagist, a consuming application's **root composer.json** must declare both repositories; dependency repositories are not inherited:
 
@@ -31,11 +31,11 @@ Until the packages are registered on Packagist, a consuming application's **root
         { "type": "vcs", "url": "https://github.com/Edrard/WgAuth.git" },
         { "type": "vcs", "url": "https://github.com/Edrard/WgApi.git" }
     ],
-    "require": { "php": "^8.5", "edrard/wgauth": "^1.0.2" }
+    "require": { "php": "^8.5", "edrard/wgauth": "^1.0.3" }
 }
 ```
 
-For local development, use root path repositories with explicit versions edrard/wgauth = 1.0.2 and edrard/wgapi = 2.0.0. Local symlinks do not provide a release deployment artifact.
+For local development, use root path repositories with explicit versions edrard/wgauth = 1.0.3 and edrard/wgapi = 2.0.0. Local symlinks do not provide a release deployment artifact.
 
 ## Configure
 
@@ -134,7 +134,7 @@ prolongate() validates expiration and requires the returned account ID to match 
 
 ## Optional PSR-3 logging
 
-This feature is available in the current development source and is listed under Unreleased in [CHANGELOG.md](CHANGELOG.md). The published v1.0.2 release does not include it.
+Optional PSR-3 logging is available starting with v1.0.3; see [CHANGELOG.md](CHANGELOG.md).
 
 Logging is disabled by default through `Psr\Log\NullLogger`. The package directly depends on `psr/log` 3 (PHP-FIG, MIT); no logging backend is installed or configured. Existing constructor calls still work unchanged. Inject any consumer-provided `Psr\Log\LoggerInterface` using the optional trailing `logger` argument:
 

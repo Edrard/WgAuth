@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.0.3 - 2026-10-10
 
 - Add optional PSR-3 constructor injection to AuthClient, WgAuth and GuzzleAuthTransport, with NullLogger fallback and best-effort delivery that isolates logger failures.
 - Keep records sparse and credential-free; routine events use debug and operational/security anomalies use warning, without logging failures again at higher layers.
