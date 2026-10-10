@@ -11,6 +11,7 @@ use edrard\WgAuth\Contracts\AuthTransportInterface;
 use edrard\WgAuth\Http\GuzzleAuthTransport;
 use InvalidArgumentException;
 use SensitiveParameter;
+use Psr\Log\LoggerInterface;
 
 final class AuthClient
 {
@@ -24,10 +25,10 @@ final class AuthClient
      * @param string|array<string, string> $applicationIds
      * @param (callable(): int)|null $clock
      */
-    public function __construct(#[SensitiveParameter] string|array $applicationIds, ?AuthTransportInterface $transport = null, ?callable $clock = null)
+    public function __construct(#[SensitiveParameter] string|array $applicationIds, ?AuthTransportInterface $transport = null, ?callable $clock = null, ?LoggerInterface $logger = null)
     {
         $this->configuration = new ApiConfiguration(is_string($applicationIds) ? array_fill_keys(['eu', 'na', 'asia'], $applicationIds) : $applicationIds);
-        $this->transport = $transport ?? new GuzzleAuthTransport();
+        $this->transport = $transport ?? new GuzzleAuthTransport(logger: $logger);
         $this->clock = $clock === null ? time(...) : Closure::fromCallable($clock);
     }
 

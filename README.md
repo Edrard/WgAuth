@@ -143,6 +143,28 @@ php examples/verify-regions.php
 
 It obtains login URLs, checks public account data over POST and confirms a deliberately invalid token is rejected. It never completes user login, obtains a real user token, renews or revokes a real token.
 
+## Optional PSR-3 logging
+
+The package directly requires the MIT-licensed `psr/log` contract (`^3.0`). Pass an application-provided `Psr\Log\LoggerInterface` through the last optional AuthClient constructor argument. It is forwarded to the default GuzzleAuthTransport:
+
+```php
+/** @var \Psr\Log\LoggerInterface $logger Configured by the application. */
+$client = new AuthClient($applicationId, logger: $logger);
+```
+
+When providing your own transport, configure that transport's logger explicitly; AuthClient leaves its configuration unchanged:
+
+```php
+$transport = new \edrard\WgAuth\Http\GuzzleAuthTransport(logger: $logger);
+$client = new AuthClient($applicationId, transport: $transport);
+```
+
+No supplied logger (or null) uses NullLogger and works without log output. The default transport attempts only one warning per failed request, identifying transport_failure, http_failure, invalid_json, invalid_envelope or provider_rejected, with nullable numeric providerCode/httpStatus. Successful requests, local argument validation, state handling and token conversion produce no records. There are no per-field logs, automatic HTTP retries or log-delivery retries.
+
+The default transport treats `NullLogger`, including a subclass, as an explicit opt-out from diagnostics. For an active custom logger, implement `LoggerInterface` or extend `Psr\Log\AbstractLogger`.
+
+Throwable thrown by the logger is discarded only at the logging boundary; the same sanitized AuthException and provider/HTTP codes are preserved. No URLs, callback state, account IDs, nicknames, request parameters, credentials, response bodies or exception objects/messages/traces are included in context. The application owns handlers, destinations, filtering and retention. PSR-3 is synchronous; use a logger that queues records if delivery must be non-blocking. [Українська документація](docs/uk/README.md).
+
 ## Boundaries and security
 
 - API origins are fixed to the official WoT hosts; redirects, HTTP credentials, unsafe callback URLs and non-matching login hosts are rejected.
