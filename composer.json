@@ -13,7 +13,7 @@
         "ext-ctype": "*",
         "ext-filter": "*",
         "ext-session": "*",
-        "edrard/wgapi": "^2.0",
+        "edrard/wgapi": "dev-master",
         "guzzlehttp/guzzle": "^7.10",
         "guzzlehttp/psr7": "^2.11",
         "psr/log": "^3.0"

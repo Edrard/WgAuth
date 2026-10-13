@@ -6,7 +6,9 @@
 
 ## Встановлення та налаштування
 
-Потрібні PHP 8.5, Composer 2, розширення ctype, filter та session. Для локальної розробки виконайте `composer install` у каталозі бібліотеки. Для встановлення у застосунок оголосіть VCS-репозиторії WgAuth та WgApi у кореневому `composer.json`, як показано в англійській документації. Поточний реліз — v1.0.3; він містить необов'язкове PSR-3 логування.
+Поточний код WgAuth залежить від `edrard/wgapi: dev-master`. Для цих змін застосунок має явно вимагати `edrard/wgauth: dev-main` і `edrard/wgapi: dev-master` у кореневому `composer.json`; приклад наведено в англійському README. Глобальне `minimum-stability` змінювати не потрібно. Тег v1.0.3 зберігає попередню залежність WgApi `^2.0`. `composer install` використовує зафіксовані коміти з lock; для оновлення цих гілок виконайте `composer update edrard/wgauth edrard/wgapi --minimal-changes --prefer-stable`.
+
+Потрібні PHP 8.5, Composer 2, розширення ctype, filter та session. Для локальної розробки виконайте `composer install` у каталозі бібліотеки. Для встановлення у застосунок оголосіть VCS-репозиторії WgAuth та WgApi у кореневому `composer.json`, як показано в англійській документації. Поточна версія для встановлення — `dev-main`; вона містить необов'язкове PSR-3 логування.
 
 ```php
 use edrard\WgApi\Realm;

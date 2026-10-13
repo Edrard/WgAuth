@@ -21,7 +21,7 @@ composer validate --strict
 composer audit
 ```
 
-Release: v1.0.3. Composer name: edrard/wgauth; stable constraint: ^1.0.3; development alias: 1.0.x-dev. WgApi uses a stable ^2.0 constraint and its GitHub VCS repository.
+Install the current WgAuth source as edrard/wgauth: dev-main. It requires edrard/wgapi: dev-master from its GitHub VCS repository. The existing development alias is 1.0.x-dev. The historical v1.0.3 tag retains its original WgApi ^2.0 dependency.
 
 Until the packages are registered on Packagist, a consuming application's **root composer.json** must declare both repositories; dependency repositories are not inherited:
 
@@ -31,11 +31,16 @@ Until the packages are registered on Packagist, a consuming application's **root
         { "type": "vcs", "url": "https://github.com/Edrard/WgAuth.git" },
         { "type": "vcs", "url": "https://github.com/Edrard/WgApi.git" }
     ],
-    "require": { "php": "^8.5", "edrard/wgauth": "^1.0.3" }
+    "require": {
+        "php": "^8.5",
+        "edrard/wgauth": "dev-main",
+        "edrard/wgapi": "dev-master"
+    },
+    "prefer-stable": true
 }
 ```
 
-For local development, use root path repositories with explicit versions edrard/wgauth = 1.0.3 and edrard/wgapi = 2.0.0. Local symlinks do not provide a release deployment artifact.
+The explicit root dev requirements permit these two development packages without lowering minimum-stability for other dependencies. For local development, use root path repositories with explicit versions edrard/wgauth = dev-main and edrard/wgapi = dev-master. Local symlinks do not provide a release deployment artifact.
 
 ## Configure
 
@@ -192,6 +197,6 @@ Source: [Edrard/WgAuth](https://github.com/Edrard/WgAuth). New implementation fo
 
 Official references: [login](https://developers.wargaming.net/reference/all/wot/auth/login/), [prolongate](https://developers.wargaming.net/reference/all/wot/auth/prolongate/), [logout](https://developers.wargaming.net/reference/all/wot/auth/logout/), [account/info](https://developers.wargaming.net/reference/all/wot/account/info/).
 
-Dependency updates: run `composer update "edrard/*" --with-all-dependencies --prefer-stable` in the consuming application to upgrade the WG complex to the latest versions allowed by its constraints. Caret constraints allow compatible upgrades; `composer install` preserves the lock file. Dependency repositories must be declared in the application root.
+Dependency updates: run `composer update edrard/wgauth edrard/wgapi --minimal-changes --prefer-stable` in the consuming application to refresh these development branches. `composer.lock` pins the resolved commits; `composer install` preserves them. Dependency repositories and explicit dev requirements must be declared in the application root.
 
 Token arguments are marked SensitiveParameter in internal expiry validation as well as public operations, so exception argument traces redact them even when zend.exception_ignore_args=0. Applications must also redact their own request logs and diagnostic context.

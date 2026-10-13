@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Switch the WgApi dependency from ^2.0 to dev-master and document explicit development requirements for consuming applications.
+
 ## 1.0.3 - 2026-10-10
 
 - Add optional PSR-3 constructor injection to AuthClient, WgAuth and GuzzleAuthTransport, with NullLogger fallback and best-effort delivery that isolates logger failures.

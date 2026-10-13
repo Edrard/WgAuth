@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f18b17ede2a741bb053ee82cd7e67237",
+    "content-hash": "1ff0bb78d2c8b25cb5e643ba4ece4ebf",
     "packages": [
         {
             "name": "edrard/wgapi",
-            "version": "v2.0.0",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Edrard/WgApi.git",
-                "reference": "47c30d65651f617486e6e4dad8d7faf3c8ec9c94"
+                "reference": "34eed446f763283b3a56b5f7c83a8b9eeb0f4c14"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Edrard/WgApi/zipball/47c30d65651f617486e6e4dad8d7faf3c8ec9c94",
-                "reference": "47c30d65651f617486e6e4dad8d7faf3c8ec9c94",
+                "url": "https://api.github.com/repos/Edrard/WgApi/zipball/34eed446f763283b3a56b5f7c83a8b9eeb0f4c14",
+                "reference": "34eed446f763283b3a56b5f7c83a8b9eeb0f4c14",
                 "shasum": ""
             },
             "require": {
@@ -30,10 +30,11 @@
                 "phpstan/phpstan": "^2.1",
                 "phpunit/phpunit": "^12.5"
             },
+            "default-branch": true,
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.0.x-dev"
+                    "dev-master": "3.0.x-dev"
                 }
             },
             "autoload": {
@@ -68,13 +69,13 @@
                     "name": "Edrard"
                 }
             ],
-            "description": "Validated Wargaming API URL and batch builder for PHP 8.5",
+            "description": "Single-URL World of Tanks API builder for PHP 8.5",
             "homepage": "https://github.com/Edrard/WgApi",
             "support": {
                 "source": "https://github.com/Edrard/WgApi",
                 "issues": "https://github.com/Edrard/WgApi/issues"
             },
-            "time": "2026-09-26T21:22:22+00:00"
+            "time": "2026-10-10T12:13:16+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -5131,7 +5132,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": {
+        "edrard/wgapi": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
